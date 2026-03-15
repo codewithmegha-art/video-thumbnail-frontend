@@ -1,18 +1,67 @@
-# React + Vite
+# Video Thumbnail Gallery – Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Tech Stack
 
-Currently, two official plugins are available:
+* React
+* Vite
+* Material UI
+* React Query
+* Axios
+* React Router
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+* Video gallery display
+* Search videos by title
+* Filter videos by tags
+* Video detail page
+* Video player
+* Thumbnail selection
+* Responsive UI
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+## How to Run Frontend
 
-Note: This will impact Vite dev & build performances.
+### 1. Clone Repository
 
-## Expanding the ESLint configuration
+git clone https://github.com/yourusername/video-thumbnail-frontend.git
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+cd video-thumbnail-frontend
+
+### 2. Install Dependencies
+
+npm install
+
+### 3. Start Development Server
+
+npm run dev
+
+Frontend will run at:
+
+http://localhost:5173
+
+## Backend Connection
+
+The frontend connects to the backend API at:
+
+http://localhost:5000/api
+
+You can configure this inside:
+
+src/services/api.js
+
+## Environment Variables
+
+No environment variables required for frontend.
+
+## Project Structure
+
+src
+components
+pages
+services
+App.jsx
+main.jsx
+
+## Notes
+
+This frontend application consumes APIs from the backend service to fetch videos, thumbnails, and update the primary thumbnail.
