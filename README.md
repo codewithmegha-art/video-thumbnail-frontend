@@ -25,7 +25,7 @@
 
 git clone https://github.com/yourusername/video-thumbnail-frontend.git
 
-cd video-thumbnail-frontend
+cd frontend
 
 ### 2. Install Dependencies
 
