@@ -52,7 +52,7 @@ jobs:
 
     # Push image
        - name: Push Docker Image
-         run : docker push "{{secrets.DOCKER_USERNAME}}/frontend-app:latest"
+         run : docker push "${{ secrets.DOCKER_USERNAME }}/frontend-app:latest"
 
         
 
