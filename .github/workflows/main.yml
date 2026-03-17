@@ -44,15 +44,15 @@ jobs:
 
     # Build Image
        - name: Build Docker image
-         run:  docker build -t "${{vars.DOCKER_USERNAME}}/frontend-app:latest . 
+         run:  docker build -t "${{vars.DOCKER_USERNAME}}/frontend-app:latest" . 
 
     # Scan the docker image
        - name : Sonar Docker Image
-         run : trivy image "{{vars.DOCKER_USERNAME}}/frontend-app:latest 
+         run : trivy image "{{vars.DOCKER_USERNAME}}/frontend-app:latest" 
 
     # Push image
        - name: Push Docker Image
-         run : docker push "{{vars.DOCKER_USERNAME}}/frontend-app:latest
+         run : docker push "{{vars.DOCKER_USERNAME}}/frontend-app:latest"
 
         
 
