@@ -14,6 +14,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: meghadumbre/frontend-app:latest   # 👈 IMPORTANT
+        image: meghadumbre/frontend-app:v2   # 👈 IMPORTANT
+        imagePullPolicy: Always 
         ports:
         - containerPort: 80
