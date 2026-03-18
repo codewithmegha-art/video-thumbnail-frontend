@@ -1,83 +1,159 @@
-name: Frntend CI/CD Pipeline
+# name: Frntend CI/CD Pipeline
 
-on:  
-  push: 
-    branches: ['main']
+# on:  
+#   push: 
+#     branches: ['main']
+
+# jobs:
+#   build:
+#      runs-on: self-hosted
+
+#      steps:
+#      # Checkout code
+#        - name: Checkout code
+#          uses: actions/checkout@v4
+
+#         # Setup node js
+#        - name: Setup node js
+#          uses: actions/setup-node@v4
+
+#       # install dependancies
+#        - name: Install Dependencies
+#          run: npm ci 
+
+#     # Build react app
+#        - name: Build React app
+#          run : npm run build 
+
+#     # Gitleaks
+#        - name: Run Gitleaks scan
+#          run : gitleaks detect --source . --no-git
+
+#     # Sonarqube
+#        # - name : Sonarqube analysis
+#        #   run : |
+#        #     docker run --rm \
+#        #     -e SONAR_HOST_URL="${{ vars.SONAR_HOST_URL }}" \
+#        #     -e SONAR_LOGIN="${{ secrets.SONAR_TOKEN }}" \
+#        #     -v "${{ github.workspace }}:/usr/src" \
+#        #     sonarsource/sonar-scanner-cli
+
+#     # docker login
+#        - name: Docker login
+#          run : echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME}}" --password-stdin
+
+#     # Build Image
+#        - name: Build Docker image
+#          run:  docker build -t "${{secrets.DOCKER_USERNAME}}/frontend-app:latest" . 
+
+#     # Scan the docker image
+#        - name : Sonar Docker Image
+#          run : trivy image --scanners vuln "${{ secrets.DOCKER_USERNAME }}/frontend-app:latest" 
+
+#     # Push image
+#        - name: Push Docker Image
+#          run : docker push "${{ secrets.DOCKER_USERNAME }}/frontend-app:latest" continue-on-error:  
+
+#     # set kube config
+#        - name : Set Kubeconfig
+#          run : | 
+#            mkdir -p $HOME/.kube
+#            echo: "{{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config 
+
+#      # 🔄 Replace Image in YAML
+#        - name: Update Deployment Image
+#          run: |
+#            sed -i "s|IMAGE_PLACEHOLDER|${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:${{ github.sha }}|g" k8s/deployment.yaml
+
+#     # Apply kubernetes file 
+#        - name : Deploy to kubernetes
+#          run : |
+#             kubectl apply -f k8s/deployment.yaml
+#             kubectl apply -f k8s/service.yaml
+#             kubectl apply -f k8s/ingress.yaml
+
+#     # Verify Deployment
+#        - name : Verify
+#          run : | 
+#            kubectl get pods
+#            kubectl get svc
+#            kubectl get ingress
+
+
+name: Frontend CI/CD Pipeline
+
+on:
+  push:
+    branches: ["main"]
+
+env:
+  IMAGE_NAME: frontend-app
 
 jobs:
   build:
-     runs-on: self-hosted
+    runs-on: self-hosted
 
-     steps:
-     # Checkout code
-       - name: Checkout code
-         uses: actions/checkout@v4
+    steps:
+      # 📥 Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-        # Setup node js
-       - name: Setup node js
-         uses: actions/setup-node@v4
+      # 🟢 Setup Node.js
+      - name: Setup node js
+        uses: actions/setup-node@v4
 
-      # install dependancies
-       - name: Install Dependencies
-         run: npm ci 
+      # 📦 Install dependencies
+      - name: Install Dependencies
+        run: npm ci
 
-    # Build react app
-       - name: Build React app
-         run : npm run build 
+      # 🏗️ Build React app
+      - name: Build React app
+        run: npm run build
 
-    # Gitleaks
-       - name: Run Gitleaks scan
-         run : gitleaks detect --source . --no-git
+      # 🔐 Gitleaks scan
+      - name: Run Gitleaks scan
+        run: gitleaks detect --source . --no-git
 
-    # Sonarqube
-       # - name : Sonarqube analysis
-       #   run : |
-       #     docker run --rm \
-       #     -e SONAR_HOST_URL="${{ vars.SONAR_HOST_URL }}" \
-       #     -e SONAR_LOGIN="${{ secrets.SONAR_TOKEN }}" \
-       #     -v "${{ github.workspace }}:/usr/src" \
-       #     sonarsource/sonar-scanner-cli
+      # 🐳 Docker login
+      - name: Docker login
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
-    # docker login
-       - name: Docker login
-         run : echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME}}" --password-stdin
+      # 🐳 Build Docker image
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:${{ github.sha }} .
 
-    # Build Image
-       - name: Build Docker image
-         run:  docker build -t "${{secrets.DOCKER_USERNAME}}/frontend-app:latest" . 
+      # 🔍 Trivy scan
+      - name: Scan Docker image
+        run: trivy image --scanners vuln ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:${{ github.sha }}
 
-    # Scan the docker image
-       - name : Sonar Docker Image
-         run : trivy image --scanners vuln "${{ secrets.DOCKER_USERNAME }}/frontend-app:latest" 
+      # 🚀 Push image
+      - name: Push Docker image
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:${{ github.sha }}
 
-    # Push image
-       - name: Push Docker Image
-         run : docker push "${{ secrets.DOCKER_USERNAME }}/frontend-app:latest" continue-on-error:  
+      # ☸️ Set kubeconfig
+      - name: Set Kubeconfig
+        run: |
+          mkdir -p $HOME/.kube
+          echo "${{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config
 
-    # set kube config
-       - name : Set Kubeconfig
-         run : | 
-           mkdir -p $HOME/.kube
-           echo: "{{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config 
+      # 🔄 Update image in deployment.yaml
+      - name: Update Deployment Image
+        run: |
+          sed -i "s|IMAGE_PLACEHOLDER|${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:${{ github.sha }}|g" k8s/deployment.yaml
 
-     # 🔄 Replace Image in YAML
-       - name: Update Deployment Image
-         run: |
-           sed -i "s|IMAGE_PLACEHOLDER|${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:${{ github.sha }}|g" k8s/deployment.yaml
+      # 🚀 Deploy to Kubernetes
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+          kubectl apply -f k8s/ingress.yaml
 
-    # Apply kubernetes file 
-       - name : Deploy to kubernetes
-         run : |
-            kubectl apply -f k8s/deployment.yaml
-            kubectl apply -f k8s/service.yaml
-            kubectl apply -f k8s/ingress.yaml
-
-    # Verify Deployment
-       - name : Verify
-         run : | 
-           kubectl get pods
-           kubectl get svc
-           kubectl get ingress
+      # ✅ Verify deployment
+      - name: Verify
+        run: |
+          kubectl get pods
+          kubectl get svc
+          kubectl get ingress
            
            
          
