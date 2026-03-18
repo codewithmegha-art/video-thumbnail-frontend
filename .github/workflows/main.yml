@@ -52,7 +52,35 @@ jobs:
 
     # Push image
        - name: Push Docker Image
-         run : docker push "${{ secrets.DOCKER_USERNAME }}/frontend-app:latest"
+         run : docker push "${{ secrets.DOCKER_USERNAME }}/frontend-app:latest" continue-on-error:  
+
+    # set kube config
+       - name : Set Kubeconfig
+         run : | 
+           mkdir -p $HOME/.kube
+           echo: "{{ secrets.KUBE_CONFIG }}" > $HOME/.kube/config 
+
+     # 🔄 Replace Image in YAML
+       - name: Update Deployment Image
+         run: |
+           sed -i "s|IMAGE_PLACEHOLDER|${{ secrets.DOCKER_USERNAME }}/$IMAGE_NAME:${{ github.sha }}|g" k8s/deployment.yaml
+
+    # Apply kubernetes file 
+       - name : Deploy to kubernetes
+         run : |
+            kubectl apply -f k8s/deployment.yaml
+            kubectl apply -f k8s/service.yaml
+            kubectl apply -f k8s/ingress.yaml
+
+    # Verify Deployment
+       - name : Verify
+         run : | 
+           kubectl get pods
+           kubectl get svc
+           kubectl get ingress
+           
+           
+         
 
         
 
